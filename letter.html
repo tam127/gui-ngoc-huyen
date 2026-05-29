@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gửi Ngọc Huyền - Kỷ Niệm 7 Năm</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Pacifico&family=Quicksand:wght@500;600&display=swap');
+
+        :root {
+            --bg-color: #ffe6e6;
+            --pink-dark: #ff85a2;
+            --pink-medium: #ffb3c1;
+            --pink-light: #fff0f3;
+            --text-color: #4a4a4a;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            overflow-x: hidden;
+        }
+
+        /* Container chính cho toàn bộ trang có thể cuộn */
+        .main-page-container {
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-y: auto; /* Lướt trang mượt mà */
+            perspective: 1500px;
+            scroll-behavior: smooth;
+        }
+
+        /* --- Thanh cuộn dọc của trang --- */
+        .main-page-container::-webkit-scrollbar {
+            width: 10px;
+        }
+        .main-page-container::-webkit-scrollbar-track {
+            background: var(--pink-light);
+            border-radius: 5px;
+        }
+        .main-page-container::-webkit-scrollbar-thumb {
+            background: var(--pink-dark);
+            border-radius: 5px;
+        }
+
+        /* --- Màn hình chào --- */
+        .welcome-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background-color: rgba(255, 230, 230, 0.95);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 0.8s ease-out, visibility 0.8s;
+        }
+
+        .hello-text {
+            font-family: 'Pacifico', cursive;
+            font-size: 4.5rem;
+            color: var(--pink-dark);
+            text-shadow: 2px 2px 10px rgba(255, 133, 162, 0.4);
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .hello-text:hover {
+            transform: scale(1.05);
+        }
+
+        .hint-text {
+            font-family: 'Quicksand', sans-serif;
+            font-size: 1.2rem;
+            color: var(--pink-dark);
+            opacity: 0.7;
+        }
+
+        /* --- Hiệu ứng trái tim tỏa ra --- */
+        .heart-burst {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 10px;
+            height: 10px;
+            z-index: 1100;
+            pointer-events: none;
+            opacity: 0;
+            transform: translate(-50%, -50%);
+        }
+
+        .heart {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: var(--pink-dark);
+            border-radius: 50%;
+            transform: rotate(-45deg);
+        }
+
+        .heart::before, .heart::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: var(--pink-dark);
+            border-radius: 50%;
+        }
+
+        .heart::before { top: -10px; left: 0; }
+        .heart::after { left: 10px; top: 0; }
+
+        @keyframes burst {
+            0% { transform: scale(0); opacity: 1; }
+            100% { transform: scale(35); opacity: 0; }
+        }
+
+        /* --- Phong bì lớn --- */
+        .envelope-wrapper {
+            margin-top: 100px;
+            margin-bottom: 50px;
+            width: 100%;
+            max-width: 600px;
+            height: 380px;
+            background-color: var(--pink-medium);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            cursor: pointer;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s ease, opacity 0.6s ease;
+            z-index: 10;
+        }
+
+        .envelope-flap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--pink-medium);
+            border-radius: 15px;
+            transform-origin: top;
+            transition: transform 0.5s ease;
+            transform: rotateX(0deg);
+            z-index: 3;
+        }
+
+        /* Cắt góc tạo hình nắp phong bì thư */
+        .envelope-flap::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-left: 300px solid transparent;
+            border-right: 300px solid transparent;
+            border-top: 200px solid rgba(255, 133, 162, 0.9);
+            border-radius: 15px 15px 0 0;
+        }
+
+        .envelope-label {
+            font-family: 'Quicksand', sans-serif;
+            font-size: 1.3rem;
+            font-weight: bold;
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #fff;
+            text-shadow: 1px 1px 5px rgba(0,0,0,0.1);
+        }
+
+        /* --- Bức thư khổ lớn hiển thị mượt mà --- */
+        .letter-container {
+            width: 100%;
+            max-width: 700px;
+            background-color: #fff;
+            padding: 50px 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            margin: 60px 20px 100px 20px;
+            display: none; /* Xuất hiện khi bấm mở */
+            flex-direction: column;
+            align-items: start;
+            opacity: 0;
+            transition: opacity 0.8s ease;
+        }
+
+        .letter-header {
+            font-family: 'Dancing Script', cursive;
+            font-size: 3rem;
+            color: var(--pink-dark);
+            margin-bottom: 25px;
+            border-bottom: 2px dashed var(--pink-medium);
+            width: 100%;
+            padding-bottom: 10px;
+        }
+
+        .letter-content {
+            font-family: 'Quicksand', sans-serif;
+            font-size: 1.15rem;
+            line-height: 1.9;
+            color: var(--text-color);
+            text-align: justify;
+        }
+
+        .letter-content p {
+            margin-bottom: 18px;
+            text-indent: 25px;
+        }
+
+        .footer {
+            margin-top: 20px;
+            font-size: 0.9rem;
+            opacity: 0.4;
+            width: 100%;
+            text-align: center;
+        }
+
+        /* Tối ưu giao diện điện thoại di động */
+        @media (max-width: 768px) {
+            .hello-text { font-size: 2.8rem; }
+            .envelope-wrapper { width: 90%; height: 280px; margin-top: 80px; }
+            .envelope-flap::after { border-left-width: 45vw; border-right-width: 45vw; border-top-width: 150px; }
+            .letter-container { padding: 35px 20px; margin-bottom: 60px; }
+            .letter-header { font-size: 2.2rem; }
+            .letter-content { font-size: 1.05rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Màn hình chào HELLO MY LOVE -->
+    <div class="welcome-screen" id="welcomeScreen">
+        <h1 class="hello-text" onclick="showLetter()">HELLO MY LOVE</h1>
+        <p class="hint-text">Bấm vào đây anh nhé!</p>
+    </div>
+
+    <!-- Khung chứa hiệu ứng trái tim tỏa ra -->
+    <div class="heart-burst" id="heartBurst">
+        <div class="heart"></div>
+    </div>
+
+    <!-- Vùng lướt toàn trang -->
+    <div class="main-page-container">
+
+        <!-- Phong bì đóng mở -->
+        <div class="envelope-wrapper" id="envelope" onclick="openEnvelope()">
+            <div class="envelope-flap" id="envelopeFlap"></div>
+            <p class="envelope-label">Gửi Ngọc Huyền</p>
+        </div>
+
+        <!-- Nội dung thư lớn sau khi mở -->
+        <div class="letter-container" id="letterContainer">
+            <h2 class="letter-header">Gửi Ngọc Huyền,</h2>
+            <div class="letter-content">
+                <p>
+                    Chúc mừng chuyện tình của chúng mình hoàn thành chặng đường 7 năm. 7 năm có lẽ không phải dài, nhưng nó chứa cả thanh xuân của anh, tuổi trẻ của em. Hơn 2555 ngày, anh và em đã cùng trải qua những hiểu lầm, những cãi vã, thậm chí còn ảnh hưởng đến người khác, phải lôi cả người nhà vào để giải quyết những sự bồng bột của tuổi trẻ.
+                </p>
+                <p>
+                    Anh xin lỗi em những lúc làm em buồn, những lúc vô tâm không để ý đến nhau, xin lỗi về khoảng thời gian đi làm, ai cũng vô tâm, ích kỷ, ai cũng suy nghĩ cho mình đầu tiên, xin lỗi em về những rắc rối anh gây ra cho em từ lúc mình quay lại đến giờ. Anh biết là những điều như thế không một người con gái nào ở cái tuổi 20 có thể chịu đựng nổi. Xin lỗi em vì để em phải gánh chịu quá nhiều.
+                </p>
+                <p>
+                    Gác lại những chuyện buồn, anh cũng cảm ơn em về những hi sinh không ngại khó khăn của em dành cho anh, lúc nào em cũng đặt anh lên trên hàng đầu kể cả người thân. 7 năm qua, gần 3000 ngày có lẽ là một con số đáng mơ ước với những cặp đôi yêu nhau.
+                </p>
+                <p style="text-align: right; font-weight: bold; color: var(--pink-dark); margin-top: 25px;">
+                    Anh yêu em rất nhiều, vợ yêu - bạn đồng hành của anh !
+                </p>
+            </div>
+            <p class="footer">Kỷ niệm tình yêu 7 năm</p>
+        </div>
+
+    </div>
+
+    <script>
+        function showLetter() {
+            const burst = document.getElementById('heartBurst');
+            const welcome = document.getElementById('welcomeScreen');
+            
+            // Kích hoạt hiệu ứng trái tim bung tỏa
+            burst.style.opacity = '1';
+            burst.style.animation = 'burst 0.8s ease-out';
+
+            // Xóa bỏ hoàn toàn phần tử hiệu ứng trái tim và màn hình chào để không làm nghẽn chữ
+            setTimeout(() => {
+                welcome.style.opacity = '0';
+                welcome.style.visibility = 'hidden';
+                burst.remove(); // Xóa hẳn phần tử trái tim khỏi trang web!
+            }, 750);
+        }
+
+        function openEnvelope() {
+            const envelope = document.getElementById('envelope');
+            const flap = document.getElementById('envelopeFlap');
+            const letter = document.getElementById('letterContainer');
+            
+            // Hiệu ứng lật nắp phong bì trước
+            flap.style.transform = 'rotateX(180deg)';
+            
+            setTimeout(() => {
+                // Biến mất phong bì một cách nhẹ nhàng
+                envelope.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                envelope.style.opacity = '0';
+                envelope.style.transform = 'scale(0.9)';
+                
+                setTimeout(() => {
+                    envelope.style.display = 'none';
+                    
+                    // Hiện bức thư khổ lớn lên
+                    letter.style.display = 'flex';
+                    setTimeout(() => {
+                        letter.style.opacity = '1';
+                        // Tự động cuộn trang xuống phần bức thư một cách mượt mà
+                        letter.scrollIntoView({ behavior: 'smooth' });
+                    }, 50);
+                }, 500);
+            }, 400);
+        }
+    </script>
+</body>
+</html>
